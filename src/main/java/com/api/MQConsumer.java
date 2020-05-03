@@ -44,13 +44,18 @@ public class MQConsumer {
 						byte[] body) throws IOException {
 					System.out.println(
 							"Received Msg=" + new String(body) + " tag=" + consumerTag + " envelope=" + envelope);
+					//do business
+					chn.basicAck(envelope.getDeliveryTag(), false);
 				}
 			};
+			chn.basicQos(5);//服务端限流
+			chn.basicConsume(QUEUE_NAME, false, consumer);
+//			chn.basicReject(deliveryTag, requeue);
+//			chn.basicNack(deliveryTag, multiple, requeue);
 			
-			chn.basicConsume(QUEUE_NAME, true, consumer);
 
-//			chn.close();
-//			conn.close();
+			chn.close();
+			conn.close();
 		} catch (IOException | TimeoutException e) {
 			e.printStackTrace();
 		}
